@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Accueil</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
+
+</head>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const vignettesDepliables = document.querySelectorAll('.vignette.depliable');
+    
+    vignettesDepliables.forEach(vignette => {
+        const vignetteTrigger = vignette.querySelector('.vignette-trigger');
+        const contenuDepliant = vignette.querySelector('.contenu-depliant');
+        
+        vignetteTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Fermer si déjà ouvert
+            if (vignette.classList.contains('active')) {
+                vignette.classList.remove('active');
+                return;
+            }
+            
+            // Fermer d'abord les autres
+            document.querySelectorAll('.vignette.depliable.active').forEach(item => {
+                if (item !== vignette) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Ouvrir celle-ci
+            vignette.classList.add('active');
+            
+            // Scroll doux
+            vignette.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        });
+        
+        // Empêcher la fermeture en cliquant dans le contenu
+        contenuDepliant.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+    
+    // Fermer en cliquant ailleurs
+    document.addEventListener('click', function(e) {
+        vignettesDepliables.forEach(vignette => {
+            if (!vignette.contains(e.target)) {
+                vignette.classList.remove('active');
+            }
+        });
+    });
+});
+</script>
+<script>
+// Gestion des rubriques dépliables
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélectionner toutes les rubriques
+    const rubriques = document.querySelectorAll('.rubrique');
+    
+    // Charger les contenus des fichiers texte
+    chargerContenus();
+    
+    // Gérer le clic sur chaque rubrique
+    rubriques.forEach(rubrique => {
+        const trigger = rubrique.querySelector('.rubrique-trigger');
+        
+        trigger.addEventListener('click', function() {
+            // Fermer si déjà ouvert
+            if (rubrique.classList.contains('active')) {
+                rubrique.classList.remove('active');
+                return;
+            }
+            
+            // Fermer les autres rubriques
+            document.querySelectorAll('.rubrique.active').forEach(r => {
+                if (r !== rubrique) {
+                    r.classList.remove('active');
+                }
+            });
+            
+            // Ouvrir cette rubrique
+            rubrique.classList.add('active');
+            
+            // Scroll doux vers la rubrique ouverte
+            rubrique.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        });
+    });
+    
+    // Fonction pour charger les contenus des fichiers texte
+    function chargerContenus() {
+        // Charger "chezvous.txt"
+        fetch('chezvous.txt')
+            .then(response => response.text())
+            .then(text => {
+                document.getElementById('chezvous-content').innerHTML = 
+                    formatTexte(text);
+            })
+            .catch(error => {
+                console.error('Erreur chargement chezvous.txt:', error);
+                document.getElementById('chezvous-content').innerHTML = 
+                    '<p>Contenu à venir prochainement...</p>';
+            });
+        
+        // Charger "foires.txt"
+        fetch('foires.txt')
+            .then(response => response.text())
+            .then(text => {
+                document.getElementById('foires-content').innerHTML = 
+                    formatTexte(text);
+            })
+            .catch(error => {
+                console.error('Erreur chargement foires.txt:', error);
+                document.getElementById('foires-content').innerHTML = 
+                    '<p>Contenu à venir prochainement...</p>';
+            });
+        
+        // Charger "commerces.txt"
+        fetch('commerces.txt')
+            .then(response => response.text())
+            .then(text => {
+                document.getElementById('commerces-content').innerHTML = 
+                    formatTexte(text);
+            })
+            .catch(error => {
+                console.error('Erreur chargement commerces.txt:', error);
+                document.getElementById('commerces-content').innerHTML = 
+                    '<p>Contenu à venir prochainement...</p>';
+            });
+    }
+    
+    // Formater le texte (ajoute des paragraphes)
+   function formatTexte(text) {
+        // Remplacer les **texte** par <strong>texte</strong>
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Remplacer les *texte* par <em>texte</em>
+        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Gérer les listes à puces
+        const lignes = text.split('\n');
+        let inList = false;
+        let resultat = '';
+        
+        for (let i = 0; i < lignes.length; i++) {
+            const ligne = lignes[i].trim();
+            
+            // Détecter les éléments de liste
+            if (ligne.startsWith('- ') || ligne.startsWith('* ')) {
+                if (!inList) {
+                    resultat += '<ul>';
+                    inList = true;
+                }
+                const contenu = ligne.substring(2);
+                resultat += `<li>${contenu}</li>`;
+            } else {
+                // Fermer la liste si on en était dans une
+                if (inList && ligne !== '') {
+                    resultat += '</ul>';
+                    inList = false;
+                }
+                
+                // Gérer les paragraphes
+                if (ligne === '') {
+                    if (i > 0 && lignes[i-1].trim() !== '' && 
+                        i < lignes.length-1 && lignes[i+1].trim() !== '') {
+                        resultat += '</p><p>';
+                    }
+                } else if (!inList) {
+                    // Ajouter le texte avec <br> pour les sauts de ligne
+                    if (i === 0 || lignes[i-1].trim() === '') {
+                        resultat += `<p>${ligne}`;
+                    } else {
+                        resultat += `<br>${ligne}`;
+                    }
+                    
+                    // Fermer le paragraphe si ligne suivante vide ou fin
+                    if (i === lignes.length-1 || lignes[i+1].trim() === '') {
+                        resultat += '</p>';
+                    }
+                }
+            }
+        }
+        
+        // Fermer la liste si toujours ouverte
+        if (inList) {
+            resultat += '</ul>';
+        }
+        
+        return resultat;
+    }
+});
+</script>
+<body>
+
+<header class="site-header">
+  <div class="header-left">
+    <img src="images/logo.png" alt="Logo" class="logo">
+    <span class="site-title">Bocaux d'Acqui</span>
+  </div>
+
+  <nav class="header-nav">
+    <a href="index.html">Accueil</a>
+    <a href="produits.html">Nos produits</a>
+    <a href="valeurs.html">Nos valeurs</a>
+    <a href="quisommesnous.html">Qui sommes-nous ?</a>
+    <a href="index.html#localisation">Où nous trouver ?</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+<!-- TEXTE D'INTRODUCTION -->
+<div class="container">
+    <div id="intro-text">Chargement du texte...</div>
+</div>
+
+<!-- IMAGE D'ACCUEIL -->
+<section class="accueil-hero">
+    <div class="accueil-image-container">
+        <img src="images/accueil.jpg" alt="Bocaux d'Acqui - Produits artisanaux locaux" 
+             class="accueil-image">
+    </div>
+</section>
+
+<main>
+    <section class="vignettes-accueil">
+        <!-- Vignette Nos Valeurs -->
+        <a href="valeurs.html" class="vignette-link">
+            <div class="vignette-item">
+                <div class="vignette-image-container">
+                    <img src="images/valeurs.png" alt="Nos valeurs - Bocaux d'Acqui" class="vignette-image">
+                    <div class="vignette-overlay">
+                        <h3 class="vignette-title">Nos valeurs</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Vignette Qui sommes-nous -->
+        <a href="quisommesnous.html" class="vignette-link">
+            <div class="vignette-item">
+                <div class="vignette-image-container">
+                    <img src="images/quisommesnous.jpg" alt="Qui sommes-nous - Bocaux d'Acqui" class="vignette-image">
+                    <div class="vignette-overlay">
+                        <h3 class="vignette-title">Qui sommes-nous ?</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </section>
+        <!-- Nouvelle section Où nous trouver -->
+    <section class="ou-nous-trouver" id="localisation">
+        <div class="container">
+            <h2 class="section-title">Où nous trouver ?</h2>
+            
+            <div class="rubriques-container">
+                <!-- Rubrique 1 : Chez vous -->
+                <div class="rubrique" data-rubrique="chez-vous">
+                    <button class="rubrique-trigger">
+                        <span class="rubrique-icon">🏠</span>
+                        <h3 class="rubrique-titre">Chez vous !</h3>
+                        <span class="rubrique-fleche">▼</span>
+                    </button>
+                    <div class="rubrique-contenu">
+                        <div class="rubrique-texte" id="chezvous-content">
+                            Chargement du contenu...
+              </div>
+        <!-- Bouton Contact -->
+        <div class="rubrique-actions">
+            <a href="contact.html" class="btn-contact">
+                <span class="btn-icon">✉️</span>
+                Contactez-nous pour une livraison
+            </a>
+        </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rubrique 2 : Foires et Événements -->
+                <div class="rubrique" data-rubrique="foires">
+                    <button class="rubrique-trigger">
+                        <span class="rubrique-icon">🎪</span>
+                        <h3 class="rubrique-titre">Foires et Événements :</h3>
+                        <span class="rubrique-fleche">▼</span>
+                    </button>
+                    <div class="rubrique-contenu">
+                        <div class="rubrique-texte" id="foires-content">
+                            Chargement du contenu...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rubrique 3 : Dans les commerces -->
+                <div class="rubrique" data-rubrique="commerces">
+                    <button class="rubrique-trigger">
+                        <span class="rubrique-icon">🛒</span>
+                        <h3 class="rubrique-titre">Dans les commerces :</h3>
+                        <span class="rubrique-fleche">▼</span>
+                    </button>
+                    <div class="rubrique-contenu">
+                        <div class="rubrique-texte" id="commerces-content">
+                            Chargement du contenu...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>© 2026 - Bocaux d'Aqui</footer>
+
+<script>
+fetch("intro.txt")
+  .then(response => response.text())
+  .then(text => {
+    document.getElementById("intro-text").innerText = text;
+  })
+  .catch(() => {
+    document.getElementById("intro-text").innerText =
+      "Impossible de charger le texte.";
+  });
+</script>
+
+</body>
+</html>
