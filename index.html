@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -207,7 +206,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <header class="site-header">
   <div class="header-left">
-    <img src="images/logo.png" alt="Logo" class="logo">
+<a href="snake.html" style="text-decoration: none; display: inline-block;">
+  <img src="images/logo.png" alt="Logo" class="logo">
+</a>
     <span class="site-title">Bocaux d'Acqui</span>
   </div>
 
@@ -219,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <a href="index.html#localisation">Où nous trouver ?</a>
     <a href="contact.html">Contact</a>
   </nav>
-
 </header>
 <!-- TEXTE D'INTRODUCTION -->
 <div class="container">
@@ -320,7 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
     </section>
 </main>
 
-<footer>© 2026 - Bocaux d'Aqui</footer>
+  <footer class="footer">
+    © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
+  </footer>
 
 <script>
 fetch("intro.txt")
