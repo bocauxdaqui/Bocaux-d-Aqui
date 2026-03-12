@@ -1,28 +1,408 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Nos produits</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Bocaux d'Acqui · Nos produits</title>
+  <!-- Google Font & style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome 6 (free) pour icônes recherche/tri -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-
-<header>
-  <nav>
-    <a href="index.html">Accueil</a>
-    <a href="produits.html">Nos produits</a>
-    <a href="valeurs.html">Nos valeurs</a>
-    <a href="apropos.html">Qui sommes-nous ?</a>
-    <a href="index.html#localisation">Où nous trouver ?</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-</header>
-
+  <header>
+  <header class="site-header">
+    <div class="header-left">
+<a href="snake.html" style="text-decoration: none; display: inline-block;">
+  <img src="images/logo.png" alt="Logo" class="logo">
+</a>
+      <span class="site-title">Bocaux d'Acqui</span>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html">Accueil</a>
+      <a href="produits.html" class="active">Nos produits</a>
+      <a href="valeurs.html">Nos valeurs</a>
+      <a href="quisommesnous.html">Qui sommes-nous ?</a>
+      <a href="index.html#localisation">Où nous trouver ?</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 <main>
-<h1>Nos produits</h1>
-<p>Présentation de nos produits.</p>
-</main>
-<footer>© 2026 - Mon site</footer>
+  <main class="produits-page">
+    <div class="intro-text">
+      <h2 class="section-title">Nos produits</h2>
+    </div>
+
+    <!-- barre recherche + tri (vitrine classique) -->
+    <div class="shop-controls">
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher un nom, ingrédient...">
+      </div>
+      <div class="sort-wrapper">
+        <label for="sortSelect"><i class="fas fa-arrow-down-wide-short"></i> Trier par</label>
+        <select id="sortSelect">
+          <option value="default">Pertinence</option>
+          <option value="nameAsc">Nom A → Z</option>
+          <option value="nameDesc">Nom Z → A</option>
+          <option value="priceAsc">Prix ↑</option>
+          <option value="priceDesc">Prix ↓</option>
+          <option value="weightAsc">Grammage ↑</option>
+          <option value="weightDesc">Grammage ↓</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grille des produits (remplie par JS) -->
+    <div id="produitsGrid" class="produits-grid"></div>
+    <div id="loadingMessage" class="status-message"><i class="fas fa-spinner fa-pulse"></i> Chargement des conserves...</div>
+  </main>
+
+  <footer class="footer">
+    © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
+  </footer>
+
+  <script>
+    (function() {
+      // --- CONFIGURATION GOOGLE SHEETS ---
+      // IMPORTANT : vous devez publier votre feuille Google Sheet
+      // 1. Allez dans Fichier > Partager > Publier sur le web
+      // 2. Choisissez "Feuil1" ou la feuille qui contient vos données
+      // 3. Format : CSV
+      // 4. Publier et copier l'URL (elle finit par /export?format=csv&...)
+      // Remplacez l'URL ci-dessous par VOTRE LIEN PUBLIÉ CSV.
+      const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgU3w6HHEuceaZjNEnoG197rB10BHgdQ6a3VuWGgDVUMB0o6NAEfCvcoG7ChJYKdKU2pnbuw-C2hSx/pub?output=csv"; 
+      // Exemple publique bidon : remplacez absolument par votre lien.
+
+      // Correspondance colonnes : A:Nom, B:Ingrédients, C:Grammage, D:Prix, E:Image
+      // On attend que la première ligne soit l'en-tête (Nom, Ingrédients, etc...)
+      
+      const grid = document.getElementById('produitsGrid');
+      const loadingMsg = document.getElementById('loadingMessage');
+      const searchInput = document.getElementById('searchInput');
+      const sortSelect = document.getElementById('sortSelect');
+
+      let allProducts = [];         // stocke tous les produits bruts
+      let filteredProducts = [];    // après recherche
+
+      // Récupération du CSV
+      async function loadProducts() {
+        try {
+          const response = await fetch(SHEET_CSV_URL);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const csvText = await response.text();
+          const rows = parseCSV(csvText);
+          
+          if (rows.length <= 1) {
+            throw new Error("La feuille semble vide (seulement l'en-tête ?)");
+          }
+
+          // la première ligne = en-têtes (on la saute)
+          const headers = rows[0];
+          // à partir de la ligne 1 : données
+          allProducts = rows.slice(1).map((row, index) => {
+            // Sécurité : si une ligne a moins de 5 colonnes, on complète
+            while (row.length < 5) row.push('');
+            return {
+              id: `prod-${index}`,
+              name: row[0]?.trim() || "Sans nom",
+              ingredients: row[1]?.trim() || "ingrédients secrets",
+              weight: row[2]?.trim() || "NC",
+              price: parseFloat(row[3]?.toString().replace(',', '.').replace(/[^0-9.-]/g, '')) || 0, // accepte virgule
+              priceRaw: row[3]?.trim() || "0", // garder affichage originel si besoin
+              image: row[4]?.trim() || ""      // lien ou vide
+            };
+          }).filter(p => p.name !== "Sans nom" || p.ingredients !== "ingrédients secrets" || p.price > 0); // filtre les lignes vraiment vides
+
+          if (allProducts.length === 0) allProducts.push(createDemoProduct()); // au cas où démo
+
+          filteredProducts = [...allProducts];
+          renderProducts(filteredProducts);
+          loadingMsg.style.display = 'none';
+        } catch (error) {
+          console.error("Erreur chargement Google Sheet:", error);
+          loadingMsg.innerHTML = `😕 Impossible de charger les produits. Vérifiez la publication du Google Sheet.<br> <span style="font-size:0.9rem">(Utilisation de données de démonstration)</span>`;
+          // données factices pour que la vitrine soit jolie
+          allProducts = generateDemoProducts();
+          filteredProducts = [...allProducts];
+          renderProducts(filteredProducts);
+        }
+      }
+
+      // parse simple CSV (gère guillemets basiques, suffisant)
+      function parseCSV(text) {
+        const lines = text.split(/\r?\n/);
+        return lines.map(line => {
+          // enlève les guillemets entourant les champs si présent (naïf)
+          const cols = [];
+          let inQuote = false;
+          let current = '';
+          for (let char of line) {
+            if (char === '"' && !inQuote) inQuote = true;
+            else if (char === '"' && inQuote) inQuote = false;
+            else if (char === ',' && !inQuote) {
+              cols.push(current);
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          cols.push(current); // dernier champ
+          return cols.map(c => c.trim());
+        }).filter(row => row.length > 0 && row.some(cell => cell.length > 0));
+      }
+
+      // produits de démo si la feuille est inaccessible
+      function generateDemoProducts() {
+        return [
+          { name: "Confit d'oignons", ingredients: "Oignons, vinaigre, sucre, sel", weight: "180g", price: 6.5, priceRaw: "6.50", image: "https://images.unsplash.com/photo-1580912537599-ee6c9e4f6f7a?w=400&auto=format" },
+          { name: "Rillettes de maquereau", ingredients: "Maquereau, citron, épices", weight: "130g", price: 8.9, priceRaw: "8.90", image: "https://images.unsplash.com/photo-1627308595171-d1b5d671191b?w=400&auto=format" },
+          { name: "Terrine de campagne", ingredients: "Porc, foie, poivre vert", weight: "240g", price: 12.5, priceRaw: "12.50", image: "https://images.unsplash.com/photo-1604908176997-125da250eb1e?w=400&auto=format" },
+          { name: "Sardines à l'huile d'olive", ingredients: "Sardines, huile d'olive, laurier", weight: "115g", price: 7.9, priceRaw: "7.90", image: "https://images.unsplash.com/photo-1569683795645-b62e50fbf103?w=400&auto=format" },
+          { name: "Confit de tomates séchées", ingredients: "Tomates, huile, herbes", weight: "160g", price: 9.2, priceRaw: "9.20", image: "" },
+        ];
+      }
+      function createDemoProduct() {
+        return { name: "Rillettes pur porc", ingredients: "Porc, gras, sel, poivre", weight: "180g", price: 11.0, priceRaw: "11,00", image: "" };
+      }
+
+      // affichage
+      function renderProducts(products) {
+        if (!products.length) {
+          grid.innerHTML = `<div class="status-message"><i class="fa-regular fa-face-frown"></i> Aucun produit trouvé</div>`;
+          return;
+        }
+        let html = '';
+        products.forEach(p => {
+          // gestion image par défaut stylisée
+          let imgTag = '';
+          if (p.image && p.image.startsWith('http')) {
+            imgTag = `<img src="${p.image}" alt="${p.name}" loading="lazy">`;
+          } else {
+            // jolie vignette générique (bocal)
+            imgTag = `<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23eedac8'/%3E%3Ccircle cx='50' cy='40' r='24' fill='%23cdb097'/%3E%3Cpath d='M30 70 L70 70 L65 96 L35 96 Z' fill='%239a7e64'/%3E%3Ctext x='50' y='74' font-size='20' text-anchor='middle' fill='%235a402c' font-family='Arial'%3Ebocal%3C/text%3E%3C/svg%3E" alt="bocal générique">`;
+          }
+          // affichage prix avec 2 décimales
+          const formattedPrice = p.price.toFixed(2).replace('.', ',');
+          html += `
+            <div class="product-card">
+              <div class="product-img">${imgTag}</div>
+              <div class="product-info">
+                <h3 class="product-name">${escapeHtml(p.name)}</h3>
+                <div class="product-ingredients"><i class="fas fa-carrot"></i> ${escapeHtml(p.ingredients)}</div>
+                <div class="product-details">
+                  <span class="product-weight"><i class="fa-regular fa-weight-scale"></i> ${escapeHtml(p.weight)}</span>
+                  <span class="product-price">${formattedPrice}<small> €</small></span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        grid.innerHTML = html;
+      }
+
+      // simple échappement XSS
+      function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.replace(/[&<>"]/g, function(m) {
+          if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;';
+          return m;
+        });
+      }
+
+      // filtres
+      function filterAndSort() {
+        let filtered = allProducts.filter(prod => {
+          const term = searchInput.value.toLowerCase().trim();
+          if (term === '') return true;
+          return prod.name.toLowerCase().includes(term) || prod.ingredients.toLowerCase().includes(term);
+        });
+
+        // tri
+        const sortVal = sortSelect.value;
+        if (sortVal === 'nameAsc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+        else if (sortVal === 'nameDesc') filtered.sort((a,b) => b.name.localeCompare(a.name));
+        else if (sortVal === 'priceAsc') filtered.sort((a,b) => a.price - b.price);
+        else if (sortVal === 'priceDesc') filtered.sort((a,b) => b.price - a.price);
+        else if (sortVal === 'weightAsc') filtered.sort((a,b) => naturalWeight(a.weight) - naturalWeight(b.weight));
+        else if (sortVal === 'weightDesc') filtered.sort((a,b) => naturalWeight(b.weight) - naturalWeight(a.weight));
+        else filtered.sort((a,b) => a.id - b.id); // default stable
+
+        renderProducts(filtered);
+      }
+
+      // extraire nombre depuis "180g" "500 ml" etc.
+      function naturalWeight(w) {
+        if (!w) return 0;
+        const num = parseFloat(w.toString().replace(/[^\d.,]/g, '').replace(',','.'));
+        return isNaN(num) ? 0 : num;
+      }
+
+      // events
+      searchInput.addEventListener('input', filterAndSort);
+      sortSelect.addEventListener('change', filterAndSort);
+
+      // démarrage
+      loadProducts();
+    })();
+  </script>
+  <script>// Chef Marcel commente les produits
+const chefMessages = {
+  default: [
+    "Miam, une belle conserve !",
+    "Ah, ça sent bon !",
+    "Comme à la maison !",
+    "Ça donne faim !"
+  ],
+  confit: [
+    "Le confit d'oignons, un délice !",
+    "Parfait pour l'apéro !",
+    "Ma grand-mère en faisait comme ça !"
+  ],
+  rillettes: [
+    "Des rillettes de poisson, superbe !",
+    "Avec du pain frais, un régal !",
+    "La mer en bocal !"
+  ],
+  terrine: [
+    "Une terrine de caractère !",
+    "À déguster en famille !",
+    "Celle-ci est fameuse !"
+  ],
+  sardines: [
+    "Des sardines de Méditerranée !",
+    "Huile d'olive, parfait !",
+    "Je les préfère grillées !"
+  ],
+  tomates: [
+    "Le goût du soleil en bocal !",
+    "Tomates confites, quelle idée !",
+    "À mettre sur des pâtes !"
+  ]
+};
+
+// Fonction pour obtenir un message aléatoire
+function getRandomMessage(category) {
+  const messages = chefMessages[category] || chefMessages.default;
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+// Ajouter les événements sur les cartes produits
+document.addEventListener('mouseover', function(e) {
+  const productCard = e.target.closest('.product-card');
+  if (productCard) {
+    const productName = productCard.querySelector('.product-name')?.textContent.toLowerCase() || '';
+    const chefContainer = document.getElementById('chef-marcel');
+    const messageSpan = document.getElementById('chef-message');
+    
+    // Déterminer la catégorie
+    let category = 'default';
+    if (productName.includes('confit')) category = 'confit';
+    else if (productName.includes('rillettes') || productName.includes('maquereau')) category = 'rillettes';
+    else if (productName.includes('terrine')) category = 'terrine';
+    else if (productName.includes('sardine')) category = 'sardines';
+    else if (productName.includes('tomate')) category = 'tomates';
+    
+    // Afficher le chef avec un message
+    chefContainer.style.display = 'flex';
+    messageSpan.textContent = getRandomMessage(category);
+  }
+});
+
+document.addEventListener('mouseout', function(e) {
+  if (e.target.closest('.product-card')) {
+    // Ne pas cacher immédiatement pour laisser le temps de lire
+    setTimeout(() => {
+      if (!document.querySelector('.product-card:hover')) {
+        document.getElementById('chef-marcel').style.display = 'none';
+      }
+    }, 2000);
+  }
+});
+
+// Le chef apparaît aussi au clic pour dire bonjour
+document.querySelector('.chef-image')?.addEventListener('click', function() {
+  const messageSpan = document.getElementById('chef-message');
+  messageSpan.textContent = "Bonjour ! Je suis Marcel, votre chef conseiller !";
+  document.getElementById('chef-marcel').style.display = 'flex';
+}); </script>
+  <!-- Chef Marcel ! -->
+<div id="chef-marcel" class="chef-container" style="display: none;">
+  <div class="chef-bulle">
+    <span id="chef-message">Hum, délicieuse conserve !</span>
+  </div>
+  <img src="https://cdn-icons-png.flaticon.com/512/1995/1995572.png" alt="Chef" class="chef-image">
+</div>
+
+<style>
+.chef-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.chef-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #f5e6d3;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  background: white;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.chef-image:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.chef-bulle {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 40px 40px 40px 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  position: relative;
+  font-family: 'Bree Serif', serif;
+  font-size: 1.1rem;
+  color: #4a3729;
+  max-width: 250px;
+  text-align: center;
+  border: 2px solid #f0d5b0;
+  animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.chef-bulle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 15px solid white;
+  filter: drop-shadow(2px 4px 2px rgba(0,0,0,0.1));
+}
+</style>
 </body>
 </html>
