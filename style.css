@@ -20,9 +20,7 @@ body {
     background-color: #fffbf1;
     font-family: 'Bree Serif', serif;
 }
-/* ============================================
-   HEADER MODERNE ET PROFESSIONNEL
-   ============================================ */
+/* ============================================HEADER============================================ */
 
 .site-header {
     position: fixed;
@@ -135,9 +133,7 @@ main {
     padding: 40px 20px 40px; /* 120px → 40px */
 }
 
-/* ============================================
-   IMAGE D'ACCUEIL - NOUVELLE VERSION
-   ============================================ */
+/* ============================================IMAGE D'ACCUEIL============================================ */
 
 .accueil-hero {
     width: 100%;
@@ -331,9 +327,7 @@ main {
       max-height: 350px;
 }
 
-/* ============================================
-   VIGNETTES ACCUEIL
-   ============================================ */
+/* ============================================VIGNETTES ACCUEIL============================================ */
 
 .vignettes-accueil {
     display: grid;
@@ -458,9 +452,7 @@ main {
 .vignette-item:nth-child(2) {
     animation-delay: 0.2s;
 }
-/* ============================================
-   SECTION "OÙ NOUS TROUVER"
-   ============================================ */
+/* ============================================SECTION "OÙ NOUS TROUVER"============================================ */
 
 .ou-nous-trouver {
     max-width: 1000px;
@@ -693,9 +685,7 @@ footer {
     padding: 20px;
     margin-top: 60px;
 }
-/* ============================================
-   PAGE CONTACT
-   ============================================ */
+/* ============================================PAGE CONTACT============================================ */
 
 .contact-page {
     padding: 100px 20px 60px;
@@ -977,10 +967,180 @@ footer {
     line-height: 1.6;
     margin: 0;
 }
+/* ============================================PAGE PRODUIT============================================ */
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+        /* main produits */
+    .produits-page {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+    }
+    /* zone filtres et recherche */
+    .shop-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0 2.5rem;
+      gap: 1.5rem;
+      background: #ffffffb8;
+      padding: 1.2rem 2rem;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 16px #e1cfbc;
+    }
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      background: white;
+      padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #dccbbd;
+      flex: 2 1 280px;
+    }
+    .search-wrapper i {
+      color: #9e7b62;
+      font-size: 1.2rem;
+    }
+    #searchInput {
+      border: none;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      width: 100%;
+      background: transparent;
+      outline: none;
+    }
+    .sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: white;
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #dccbbd;
+    }
+    .sort-wrapper label {
+      font-weight: 600;
+      color: #4a3527;
+    }
+    #sortSelect {
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      padding: 0.7rem 0.2rem;
+      outline: none;
+      font-weight: 500;
+      color: #3f2e21;
+      cursor: pointer;
+    }
+    /* grille vitrine */
+    .produits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 2.2rem;
+      margin-top: 1rem;
+    }
+    /* carte produit */
+    .product-card {
+      background: white;
+      border-radius: 36px 36px 24px 24px;
+      overflow: hidden;
+      box-shadow: 0 14px 28px rgba(88, 55, 35, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #f3e3d5;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 38px rgba(98, 62, 40, 0.15);
+    }
+    .product-img {
+  height: 340px;
+  background: #efe1d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 3px solid #fadbc6;
+}
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: 0.3s;
+    }
+    .product-card:hover .product-img img {
+      scale: 1.04;
+    }
+    /* fallback jolie si pas d'image */
+    .product-img img[src=""] {
+      opacity: 0.3;
+    }
+    .product-info {
+      padding: 1.5rem 1.5rem 1.2rem;
+      background: linear-gradient(180deg, #ffffff 0%, #fef9f5 100%);
+      flex: 1;
+    }
+    .product-name {
+      font-family: 'Bree Serif', serif;
+      font-size: 1.7rem;
+      color: #522b0d;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .product-ingredients {
+      font-size: 0.95rem;
+      color: #7a5a44;
+      margin-bottom: 0.8rem;
+      background: #f7ede4;
+      padding: 0.4rem 0.9rem;
+      border-radius: 40px;
+      display: inline-block;
+    }
+    .product-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      margin: 0.9rem 0 0.3rem;
+    }
+    .product-weight {
+      background: #f1e4d9;
+      padding: 0.35rem 1rem;
+      border-radius: 30px;
+      font-weight: 500;
+      color: #4d3625;
+    }
+    .product-price {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #a15820;
+      line-height: 1;
+    }
+    .product-price small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #ad886a;
+    }
+    /* message chargement / erreur */
+    .status-message {
+      text-align: center;
+      font-size: 1.3rem;
+      padding: 4rem 2rem;
+      background: #f9eee6;
+      border-radius: 60px;
+      color: #522b0d;
+    }
+    /* responsive */
+    @media (max-width: 700px) {
+      .shop-controls { border-radius: 30px; padding: 1.2rem; }
+    }
+
+/* ============================================RESPONSIVE============================================ */
 @media (max-width: 1024px) {
     .accueil-hero {
         margin: 30px auto 10px;
@@ -1477,6 +1637,7 @@ footer {
     }
 
 }
+
 
     
 
