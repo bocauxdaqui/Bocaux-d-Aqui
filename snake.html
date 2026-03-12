@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bocaux d'Acqui · Snake des conserves</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <style>
+    .game-page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+      background: #faf7f2;
+      min-height: 60vh;
+    }
+
+    .game-title {
+    text-align: center;
+    color: #522b0d;
+    font-size: 4.5em;
+    margin-bottom: 50px;
+    position: relative;
+    padding-bottom: 15px;
+    font-family: "ClickerScript Regular";
+    }
+
+    .game-subtitle {
+      font-size: 1.2rem;
+      color: #6b4f3a;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      background: #f0e4d5;
+      padding: 2rem;
+      border-radius: 60px;
+      box-shadow: inset 0 0 20px #dbbc9b, 0 10px 30px rgba(0,0,0,0.1);
+      border: 3px solid #c9a77b;
+    }
+
+    canvas {
+      border: 4px solid #8b5a2b;
+      border-radius: 20px;
+      background: #1a1a1a;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+      width: 600px;
+      height: 400px;
+      display: block;
+      touch-action: none;
+    }
+
+    .score-board {
+      font-family: 'Bree Serif', serif;
+      font-size: 2rem;
+      color: #4a2e1a;
+      background: #ffebd2;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      border: 3px solid #c1662b;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-board i {
+      color: #c1662b;
+      margin-right: 10px;
+    }
+
+    .speed-indicator {
+      font-size: 1.1rem;
+      color: #6b4f3a;
+      background: #ffebd2;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      display: inline-block;
+      margin-left: 1rem;
+    }
+
+    .speed-indicator i {
+      color: #ff9900;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0.5rem 0;
+    }
+
+    .control-btn {
+      background: #8b5a2b;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 40px;
+      font-size: 1.2rem;
+      font-family: 'Bree Serif', serif;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 2px solid #f5d3a5;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-btn:hover {
+      background: #a97442;
+      transform: scale(1.05);
+    }
+
+    .control-btn i {
+      font-size: 1.5rem;
+    }
+
+    .touch-controls {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .touch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 220px;
+    }
+
+    .touch-btn {
+      background: #8b5a2b;
+      color: white;
+      border: none;
+      width: 65px;
+      height: 65px;
+      border-radius: 35px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: 0.1s;
+      border: 2px solid #f5d3a5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .touch-btn:active {
+      background: #c1662b;
+      transform: scale(0.9);
+    }
+
+    .instructions {
+      background: #dbbc9b;
+      padding: 0.8rem 1.5rem;
+      border-radius: 40px;
+      color: #2b1b12;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0.5rem auto;
+    }
+
+    .instructions i {
+      margin-right: 5px;
+      color: #5a3a22;
+    }
+
+    .powerup-info {
+      background: #f7d9b5;
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      display: inline-block;
+      font-size: 0.95rem;
+      color: #5a3a22;
+    }
+
+    .powerup-info i {
+      color: #ff9900;
+    }
+
+    .victory-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+    }
+
+    .victory-box {
+      background: #fff5e6;
+      border-radius: 60px;
+      padding: 3rem;
+      max-width: 500px;
+      text-align: center;
+      border: 5px solid #c1662b;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      animation: victoryPop 0.5s ease-out;
+    }
+
+    @keyframes victoryPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .victory-box h2 {
+      font-family: 'Bree Serif', serif;
+      font-size: 2.5rem;
+      color: #4a2e1a;
+      margin-bottom: 1rem;
+    }
+
+    .victory-box p {
+      font-size: 1.2rem;
+      color: #6b4f3a;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .code-container {
+      background: #f0e4d5;
+      border: 3px dashed #c1662b;
+      padding: 1rem;
+      border-radius: 30px;
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .code-box {
+      font-family: monospace;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #c1662b;
+      letter-spacing: 3px;
+      flex: 1;
+    }
+
+    .copy-btn {
+      background: #8b5a2b;
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 25px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copy-btn:hover {
+      background: #a97442;
+      transform: scale(1.1);
+    }
+
+    .copy-btn.copied {
+      background: #28a745;
+    }
+
+    .contact-btn {
+      background: #c1662b;
+      color: white;
+      border: none;
+      padding: 1.2rem 3rem;
+      border-radius: 50px;
+      font-size: 1.5rem;
+      font-family: 'Bree Serif', serif;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 3px solid #ffd966;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .contact-btn:hover {
+      background: #a97442;
+      transform: scale(1.05);
+    }
+
+    .toast-message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      z-index: 2100;
+      animation: toastFade 2s ease-in-out;
+    }
+
+    @keyframes toastFade {
+      0% { opacity: 0; transform: translate(-50%, 20px); }
+      20% { opacity: 1; transform: translate(-50%, 0); }
+      80% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+
+    @media (max-width: 700px) {
+      canvas {
+        width: 100%;
+        height: auto;
+      }
+      
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .touch-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-left">
+      <img src="images/logo.png" alt="Logo" class="logo">
+      <span class="site-title">Bocaux d'Acqui</span>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Nos produits</a>
+      <a href="valeurs.html">Nos valeurs</a>
+      <a href="quisommesnous.html">Qui sommes-nous ?</a>
+      <a href="index.html#localisation">Où nous trouver ?</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="game-page">
+    <h2 class="game-title">🥫 Snake des conserves 🥫</h2>
+    <p class="game-subtitle">🎁 100 conserves à manger et gagne un cadeau ! 🎁</p>
+
+    <div class="game-container">
+      <div class="score-board">
+        <i class="fas fa-cookie-bite"></i> 
+        <span id="score">0</span> / 100 conserves
+        <span id="speedIndicator" class="speed-indicator" style="display: none;">
+          <i class="fas fa-bolt"></i>⚡ Turbo ⚡
+        </span>
+      </div>
+
+      <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+      <div class="controls">
+        <button class="control-btn" id="restartBtn"><i class="fas fa-redo-alt"></i> Nouvelle partie</button>
+      </div>
+
+      <div class="touch-controls">
+        <div class="touch-grid">
+          <div></div>
+          <button class="touch-btn" id="touchUp"><i class="fas fa-arrow-up"></i></button>
+          <div></div>
+          <button class="touch-btn" id="touchLeft"><i class="fas fa-arrow-left"></i></button>
+          <button class="touch-btn" id="touchDown"><i class="fas fa-arrow-down"></i></button>
+          <button class="touch-btn" id="touchRight"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <div class="powerup-info">
+        <i class="fas fa-star"></i> Briquettes magiques 🧃: vitesse x2 pendant 10s ! <i class="fas fa-star"></i>
+      </div>
+
+      <div class="instructions">
+        <i class="fas fa-arrow-left"></i>
+        <i class="fas fa-arrow-right"></i>
+        <i class="fas fa-arrow-up"></i>
+        <i class="fas fa-arrow-down"></i>
+        <span> Flèches clavier ou boutons tactiles • 100 conserves = 🎁</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="victoryOverlay" class="victory-overlay">
+    <div class="victory-box">
+      <h2>🏆 FÉLICITATIONS !</h2>
+      <p>Tu as gagné une conserve gratuite !<br>Voici ton code unique :</p>
+      
+      <div class="code-container">
+        <span id="winCode" class="code-box">XXXX-XXXX</span>
+        <button id="copyCodeBtn" class="copy-btn" title="Copier le code">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      
+      <p>Envoie ce code dans la section Contact<br>pour recevoir ta récompense !</p>
+      
+      <a href="contact.html" target="_blank" class="contact-btn">
+        <i class="fas fa-envelope"></i>Contact
+      </a>
+    </div>
+  </div>
+
+  <div id="toastMessage" class="toast-message" style="display: none;">Code copié ! 📋</div>
+
+  <footer class="footer">
+    © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
+  </footer>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreSpan = document.getElementById('score');
+      const speedIndicator = document.getElementById('speedIndicator');
+      const victoryOverlay = document.getElementById('victoryOverlay');
+      const winCodeSpan = document.getElementById('winCode');
+      const copyBtn = document.getElementById('copyCodeBtn');
+      const toastMessage = document.getElementById('toastMessage');
+
+      // Paramètres du jeu
+      const gridSize = 20;
+      const gridWidth = canvas.width / gridSize;
+      const gridHeight = canvas.height / gridSize;
+      const WIN_SCORE = 1;
+      
+      // Paramètres de vitesse - Accélération progressive
+      const BASE_INTERVAL = 150; // 150ms au départ
+      const SPEED_MULTIPLIER = 1.007734; // +0.7734% par conserve = x2 à 90 conserves
+      
+      let currentBaseInterval = BASE_INTERVAL; // Intervalle de base (sans turbo)
+      let currentInterval = BASE_INTERVAL; // Intervalle actuel (avec turbo si actif)
+      let speedMultiplier = 1; // 1 = normal, 2 = turbo
+      let gameInterval;
+      
+      // Briquettes magiques (boost temporaire)
+      let speedTimer = null;
+      
+      // Briquettes magiques - Une par intervalle de 20 points, à un score aléatoire
+      const POWERUP_INTERVAL = 20;
+      let powerup = null;
+      let nextPowerupScore = generateRandomPowerupScore(0, POWERUP_INTERVAL);
+
+      // Générer un score aléatoire pour la prochaine briquette dans un intervalle donné
+      function generateRandomPowerupScore(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      // Mettre à jour le prochain score de briquette quand on change d'intervalle
+      function updateNextPowerupScore(currentScore) {
+        const currentInterval = Math.floor(currentScore / POWERUP_INTERVAL) * POWERUP_INTERVAL;
+        const nextInterval = currentInterval + POWERUP_INTERVAL;
+        
+        if (nextInterval >= WIN_SCORE) {
+          nextPowerupScore = WIN_SCORE + 1;
+          return;
+        }
+        
+        nextPowerupScore = generateRandomPowerupScore(currentInterval, nextInterval);
+        
+        while (nextPowerupScore <= currentScore && nextPowerupScore < nextInterval) {
+          nextPowerupScore = generateRandomPowerupScore(currentInterval, nextInterval);
+        }
+      }
+
+      // État du jeu
+      let snake = [{x: 15, y: 10}];
+      let direction = {x: 1, y: 0};
+      let food = {};
+      let score = 0;
+      let gameRunning = true;
+
+      const colors = {
+        background: '#1a2f1a',
+        snake: '#4caf7a',
+        snakeHead: '#8bc34a',
+        food: '#ff6b4a',
+        powerup: '#ff9900'
+      };
+
+      // Fonctions utilitaires
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (err) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return true;
+        }
+      }
+
+      function showToast() {
+        toastMessage.style.display = 'block';
+        setTimeout(() => {
+          toastMessage.style.display = 'none';
+        }, 2000);
+      }
+
+// Variante avec "83" à la fin
+function generateWinCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  
+  let part1 = '';
+  for (let i = 0; i < 2; i++) {
+    part1 += chars[Math.floor(Math.random() * chars.length)];
+  }
+  
+  let part2 = '';
+  for (let i = 0; i < 2; i++) {
+    part2 += chars[Math.floor(Math.random() * chars.length)];
+  }
+  
+  let part3 = '';
+  for (let i = 0; i < 2; i++) {
+    part3 += chars[Math.floor(Math.random() * chars.length)];
+  }
+  
+  // "83" à la fin
+  return `${part1}${part2}-${part3}-83`;
+}
+
+      // Gestion de la vitesse (boost temporaire des briquettes)
+      function setSpeed(multiplier, duration = 10000) {
+        if (speedTimer) {
+          clearTimeout(speedTimer);
+        }
+        
+        // Sauvegarder le multiplicateur actif
+        speedMultiplier = multiplier;
+        
+        // Calculer l'intervalle avec turbo
+        currentInterval = currentBaseInterval / multiplier;
+        
+        // Appliquer le nouveau timing
+        clearInterval(gameInterval);
+        gameInterval = setInterval(update, currentInterval);
+        speedIndicator.style.display = 'inline-block';
+        
+        speedTimer = setTimeout(() => {
+          // Retour à la vitesse progressive normale
+          speedMultiplier = 1;
+          currentInterval = currentBaseInterval;
+          
+          clearInterval(gameInterval);
+          gameInterval = setInterval(update, currentInterval);
+          speedIndicator.style.display = 'none';
+          speedTimer = null;
+        }, duration);
+      }
+
+      // Faire apparaître une briquette magique
+      function spawnPowerup() {
+        let validPosition = false;
+        let attempts = 0;
+        let newPowerup;
+        
+        while (!validPosition && attempts < 500) {
+          newPowerup = {
+            x: Math.floor(Math.random() * gridWidth),
+            y: Math.floor(Math.random() * gridHeight)
+          };
+          
+          validPosition = true;
+          
+          for (let segment of snake) {
+            if (segment.x === newPowerup.x && segment.y === newPowerup.y) {
+              validPosition = false;
+              break;
+            }
+          }
+          
+          if (food && food.x === newPowerup.x && food.y === newPowerup.y) {
+            validPosition = false;
+          }
+          
+          attempts++;
+        }
+        
+        if (validPosition) {
+          powerup = newPowerup;
+        }
+      }
+
+      // Faire apparaître une conserve
+      function spawnFood() {
+        let validPosition = false;
+        let attempts = 0;
+        let newFood;
+        
+        while (!validPosition && attempts < 1000) {
+          newFood = {
+            x: Math.floor(Math.random() * gridWidth),
+            y: Math.floor(Math.random() * gridHeight)
+          };
+          
+          validPosition = true;
+          
+          for (let segment of snake) {
+            if (segment.x === newFood.x && segment.y === newFood.y) {
+              validPosition = false;
+              break;
+            }
+          }
+          
+          if (powerup && powerup.x === newFood.x && powerup.y === newFood.y) {
+            validPosition = false;
+          }
+          
+          attempts++;
+        }
+        
+        food = newFood;
+      }
+
+      function draw() {
+        ctx.fillStyle = colors.background;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = '#3a6a3a';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= gridWidth; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * gridSize, 0);
+          ctx.lineTo(i * gridSize, canvas.height);
+          ctx.stroke();
+        }
+        for (let i = 0; i <= gridHeight; i++) {
+          ctx.beginPath();
+          ctx.moveTo(0, i * gridSize);
+          ctx.lineTo(canvas.width, i * gridSize);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#ffaa00';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < snake.length; i++) {
+          const segment = snake[i];
+          ctx.fillStyle = (i === snake.length - 1) ? colors.snakeHead : colors.snake;
+          ctx.fillRect(
+            segment.x * gridSize + 2, 
+            segment.y * gridSize + 2, 
+            gridSize - 4, 
+            gridSize - 4
+          );
+          
+          if (i === snake.length - 1) {
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(segment.x * gridSize + 6, segment.y * gridSize + 6, 2, 0, 2 * Math.PI);
+            ctx.arc(segment.x * gridSize + 14, segment.y * gridSize + 6, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(segment.x * gridSize + 6, segment.y * gridSize + 6, 1, 0, 2 * Math.PI);
+            ctx.arc(segment.x * gridSize + 14, segment.y * gridSize + 6, 1, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        }
+
+        if (food) {
+          ctx.fillStyle = colors.food;
+          ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 4, gridSize - 4);
+          ctx.fillStyle = 'white';
+          ctx.font = '16px Arial';
+          ctx.fillText('🥫', food.x * gridSize + 3, food.y * gridSize + 17);
+        }
+
+        if (powerup) {
+          ctx.fillStyle = colors.powerup;
+          ctx.fillRect(powerup.x * gridSize + 2, powerup.y * gridSize + 2, gridSize - 4, gridSize - 4);
+          ctx.fillStyle = 'white';
+          ctx.font = '16px Arial';
+          ctx.fillText('🧃', powerup.x * gridSize + 3, powerup.y * gridSize + 17);
+          
+          if (Math.floor(Date.now() / 500) % 2 === 0) {
+            ctx.strokeStyle = '#ffff00';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(powerup.x * gridSize + 1, powerup.y * gridSize + 1, gridSize - 3, gridSize - 3);
+          }
+        }
+      }
+
+      function update() {
+        if (!gameRunning) return;
+
+        const head = {
+          x: snake[snake.length - 1].x + direction.x,
+          y: snake[snake.length - 1].y + direction.y
+        };
+
+        if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
+          gameOver();
+          return;
+        }
+
+        for (let segment of snake) {
+          if (head.x === segment.x && head.y === segment.y) {
+            gameOver();
+            return;
+          }
+        }
+
+        snake.push(head);
+
+        if (head.x === food.x && head.y === food.y) {
+          score++;
+          scoreSpan.textContent = score;
+          
+          // Accélération progressive : calculer le nouvel intervalle de BASE
+          currentBaseInterval = Math.max(30, BASE_INTERVAL / Math.pow(SPEED_MULTIPLIER, score));
+          
+          // Mettre à jour l'intervalle actuel en tenant compte du turbo si actif
+          if (speedTimer) {
+            // Si le turbo est actif, on applique le multiplicateur
+            currentInterval = currentBaseInterval / speedMultiplier;
+          } else {
+            currentInterval = currentBaseInterval;
+          }
+          
+          // Redémarrer l'intervalle avec la nouvelle vitesse
+          clearInterval(gameInterval);
+          gameInterval = setInterval(update, currentInterval);
+          
+          // Vérifier si on doit faire apparaître une briquette
+          if (!powerup && score >= nextPowerupScore && nextPowerupScore < WIN_SCORE) {
+            spawnPowerup();
+            updateNextPowerupScore(score);
+          }
+          
+          if (score >= WIN_SCORE) {
+            gameWin();
+            return;
+          }
+          spawnFood();
+        }
+        else if (powerup && head.x === powerup.x && head.y === powerup.y) {
+          setSpeed(2, 10000); // Boost temporaire x2 pendant 10s
+          powerup = null;
+          snake.shift();
+        }
+        else {
+          snake.shift();
+        }
+
+        draw();
+      }
+
+      function gameOver() {
+        gameRunning = false;
+        clearInterval(gameInterval);
+        draw();
+        
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ff6b4a';
+        ctx.font = 'bold 30px Bree Serif';
+        ctx.fillText('GAME OVER', 150, 200);
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Bree Serif';
+        ctx.fillText('Score: ' + score + ' conserves', 190, 260);
+      }
+
+      function gameWin() {
+        gameRunning = false;
+        clearInterval(gameInterval);
+        
+        const winCode = generateWinCode();
+        winCodeSpan.textContent = winCode;
+        victoryOverlay.style.display = 'flex';
+      }
+
+      function restart() {
+        snake = [{x: 15, y: 10}];
+        direction = {x: 1, y: 0};
+        score = 0;
+        gameRunning = true;
+        powerup = null;
+        
+        // Réinitialiser la vitesse
+        currentBaseInterval = BASE_INTERVAL;
+        currentInterval = BASE_INTERVAL;
+        speedMultiplier = 1;
+        
+        // Réinitialiser la prochaine briquette
+        nextPowerupScore = generateRandomPowerupScore(0, POWERUP_INTERVAL);
+        
+        // Nettoyer les timers
+        if (speedTimer) {
+          clearTimeout(speedTimer);
+          speedTimer = null;
+        }
+        speedIndicator.style.display = 'none';
+        
+        scoreSpan.textContent = score;
+        victoryOverlay.style.display = 'none';
+        
+        spawnFood();
+        
+        clearInterval(gameInterval);
+        gameInterval = setInterval(update, currentInterval);
+        draw();
+      }
+
+      // Contrôles clavier
+      document.addEventListener('keydown', (e) => {
+        if (!gameRunning) return;
+        
+        switch(e.key) {
+          case 'ArrowUp':
+            if (direction.y === 0) direction = {x: 0, y: -1};
+            break;
+          case 'ArrowDown':
+            if (direction.y === 0) direction = {x: 0, y: 1};
+            break;
+          case 'ArrowLeft':
+            if (direction.x === 0) direction = {x: -1, y: 0};
+            break;
+          case 'ArrowRight':
+            if (direction.x === 0) direction = {x: 1, y: 0};
+            break;
+        }
+        e.preventDefault();
+      });
+
+      // Contrôles tactiles - boutons
+      document.getElementById('touchUp').addEventListener('click', () => {
+        if (gameRunning && direction.y === 0) direction = {x: 0, y: -1};
+      });
+
+      document.getElementById('touchDown').addEventListener('click', () => {
+        if (gameRunning && direction.y === 0) direction = {x: 0, y: 1};
+      });
+
+      document.getElementById('touchLeft').addEventListener('click', () => {
+        if (gameRunning && direction.x === 0) direction = {x: -1, y: 0};
+      });
+
+      document.getElementById('touchRight').addEventListener('click', () => {
+        if (gameRunning && direction.x === 0) direction = {x: 1, y: 0};
+      });
+
+      // Contrôles tactiles - swipe
+      let touchStart = {x: 0, y: 0};
+
+      canvas.addEventListener('touchstart', (e) => {
+        touchStart.x = e.touches[0].clientX;
+        touchStart.y = e.touches[0].clientY;
+        e.preventDefault();
+      }, {passive: false});
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+      }, {passive: false});
+
+      canvas.addEventListener('touchend', (e) => {
+        if (!gameRunning) return;
+        
+        const touchEnd = {
+          x: e.changedTouches[0].clientX,
+          y: e.changedTouches[0].clientY
+        };
+        
+        const diffX = touchEnd.x - touchStart.x;
+        const diffY = touchEnd.y - touchStart.y;
+        const minDistance = 30;
+        
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minDistance) {
+          if (diffX > 0 && direction.x === 0) {
+            direction = {x: 1, y: 0};
+          } else if (diffX < 0 && direction.x === 0) {
+            direction = {x: -1, y: 0};
+          }
+        } else if (Math.abs(diffY) > minDistance) {
+          if (diffY > 0 && direction.y === 0) {
+            direction = {x: 0, y: 1};
+          } else if (diffY < 0 && direction.y === 0) {
+            direction = {x: 0, y: -1};
+          }
+        }
+        
+        e.preventDefault();
+      }, {passive: false});
+
+      document.getElementById('restartBtn').addEventListener('click', restart);
+
+      copyBtn.addEventListener('click', async () => {
+        const code = winCodeSpan.textContent;
+        await copyToClipboard(code);
+        
+        copyBtn.classList.add('copied');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        showToast();
+        
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        }, 2000);
+      });
+
+      victoryOverlay.addEventListener('click', function(e) {
+        if (e.target === victoryOverlay) {
+          victoryOverlay.style.display = 'none';
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key.startsWith('Arrow')) e.preventDefault();
+      });
+
+      // Démarrage
+      spawnFood();
+      gameInterval = setInterval(update, currentInterval);
+      draw();
+    })();
+  </script>
+</body>
+</html>
