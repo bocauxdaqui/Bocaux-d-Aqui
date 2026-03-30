@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Accueil</title>
 <link rel="stylesheet" href="style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
-
 </head>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -206,12 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <header class="site-header">
   <div class="header-left">
-<a href="snake.html" style="text-decoration: none; display: inline-block;">
-  <img src="images/logo.png" alt="Logo" class="logo">
-</a>
-    <span class="site-title">Bocaux d'Acqui</span>
   </div>
-
   <nav class="header-nav">
     <a href="index.html" class="active">Accueil</a>
     <a href="produits.html">Nos produits</a>
@@ -221,11 +216,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <a href="contact.html">Contact</a>
   </nav>
 </header>
-<!-- TEXTE D'INTRODUCTION -->
-<div class="container">
-    <div id="intro-text">Chargement du texte...</div>
-</div>
-
 <!-- IMAGE D'ACCUEIL -->
 <section class="accueil-hero">
     <div class="accueil-image-container">
@@ -323,18 +313,5 @@ document.addEventListener('DOMContentLoaded', function() {
   <footer class="footer">
     © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
   </footer>
-
-<script>
-fetch("intro.txt")
-  .then(response => response.text())
-  .then(text => {
-    document.getElementById("intro-text").innerText = text;
-  })
-  .catch(() => {
-    document.getElementById("intro-text").innerText =
-      "Impossible de charger le texte.";
-  });
-</script>
-
 </body>
 </html>
