@@ -19,7 +19,7 @@ body {
     padding: 0;
     background-color: #fffbf1;
     font-family: 'Bree Serif', serif;
-    padding-top: 90px; /* Ajuste selon la hauteur du header en mobile */
+    padding-top: 10px; /* Ajuste selon la hauteur du header en mobile */
     }
 /* ============================================HEADER============================================ */
 
@@ -109,13 +109,14 @@ main {
 
 .accueil-image-container {
     width: 100%;
-    max-width: 1600px;
+    max-width: 850px;
     margin: 0 auto;
     border-radius: 6px; /* Coins plus arrondis */
     overflow: hidden;
     box-shadow: 0 15px 40px rgba(82, 43, 13, 0.25);
     transition: all 0.4s ease;
     background: #fffbf1; /* Fond pour voir les bords */
+    margin-top: 90px; /* Espace entre le header et l'image */
 }
 
 .accueil-image-container:hover {
@@ -1159,7 +1160,7 @@ footer {
 /* Mobile (768px et moins) */
 @media (max-width: 768px) {
      body {
-        padding-top: 110px; /* Ajuste selon la hauteur du header en mobile */
+        padding-top: 90px; /* Ajuste selon la hauteur du header en mobile */
     }
     .site-header {
         flex-direction: column;
@@ -1284,19 +1285,28 @@ footer {
     .bulles-additionnelles .bulle-image {
         max-width: 250px;
     }
+        .bulle-image[src*="bulle_7"] {
+        max-width: 350px;
+         max-height: 350px;
+}
+     .bulle-image[src*="bulle_10"] {
+        max-width: 350px;
+         max-height: 350px;
+
+}
 }
 
 /* Petit mobile (480px et moins) - liens encore plus grands */
 @media (max-width: 480px) {
          body {
-        padding-top: 170px; /* Ajuste selon la hauteur du header en mobile */
+        padding-top: 120px; /* Ajuste selon la hauteur du header en mobile */
     }
     .header-nav {
         gap: 8px;
     }
     
     .header-nav a {
-        padding: 12px 14px;
+        padding: 8px 10px;
         font-size: 1.15em;
     }
 
@@ -1328,7 +1338,20 @@ footer {
     .bulle-image {
         max-width: 200px;
     }
+    .bulle-image[src*="bulle_5"] {
+    max-width: 400px;
+      max-height: 350px;
 }
+    .bulle-image[src*="bulle_7"] {
+        max-width: 350px;
+         max-height: 350px;
+}
+    .bulle-image[src*="bulle_10"] {
+        max-width: 350px;
+         max-height: 350px;
+}
+}
+
 
 /* Très petit mobile */
 @media (max-width: 380px) {
