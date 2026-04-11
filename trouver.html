@@ -9,6 +9,66 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
+<style>
+/* Styles spécifiques pour la mise en page à deux colonnes */
+.localisation-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin: 30px 0;
+}
+
+.localisation-image-side {
+    flex: 1;
+    min-width: 0;
+}
+
+.localisation-image-side img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    object-fit: cover;
+}
+
+.rubriques-side {
+    flex: 1.2;
+    min-width: 0;
+}
+
+/* Responsive : sur les écrans moyens, réduction du gap */
+@media (max-width: 900px) {
+    .localisation-layout {
+        gap: 25px;
+    }
+}
+
+/* Responsive : sur les petits écrans, passage en colonne */
+@media (max-width: 768px) {
+    .localisation-layout {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .localisation-image-side {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .localisation-image-side img {
+        max-width: 80%;
+        display: block;
+        margin: 0 auto;
+    }
+}
+
+/* Ajustements supplémentaires pour très petits écrans */
+@media (max-width: 480px) {
+    .localisation-image-side img {
+        max-width: 100%;
+    }
+}
+</style>
 </head>
 <script>
 // Gestion des rubriques dépliables
@@ -171,49 +231,59 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="container">
             <h2 class="section-title">Où nous trouver ?</h2>
             
-            <div class="rubriques-container">
-                <!-- Rubrique 1 : Chez vous -->
-                <div class="rubrique" data-rubrique="chez-vous">
-                    <button class="rubrique-trigger">
-                        <h3 class="rubrique-titre">Chez vous !</h3>
-                        <span class="rubrique-fleche">▼</span>
-                    </button>
-                    <div class="rubrique-contenu">
-                        <div class="rubrique-texte" id="chezvous-content">
-                            Chargement du contenu...
-              </div>
-        <!-- Bouton Contact -->
-        <div class="rubrique-actions">
-            <a href="contact.html" class="btn-contact">
-                Contactez-nous pour une livraison
-            </a>
-        </div>
-                        </div>
-                    </div>
+            <!-- Layout à deux colonnes : image à gauche, rubriques à droite -->
+            <div class="localisation-layout">
+                <!-- Colonne image -->
+                <div class="localisation-image-side">
+                    <img src="images/ounoustrouver.png" alt="Où nous trouver - Bocaux d'Aqui">
                 </div>
                 
-                <!-- Rubrique 2 : Foires et Événements -->
-                <div class="rubrique" data-rubrique="foires">
-                    <button class="rubrique-trigger">
-                        <h3 class="rubrique-titre">Foires et Événements :</h3>
-                        <span class="rubrique-fleche">▼</span>
-                    </button>
-                    <div class="rubrique-contenu">
-                        <div class="rubrique-texte" id="foires-content">
-                            Chargement du contenu...
+                <!-- Colonne rubriques -->
+                <div class="rubriques-side">
+                    <div class="rubriques-container">
+                        <!-- Rubrique 1 : Chez vous -->
+                        <div class="rubrique" data-rubrique="chez-vous">
+                            <button class="rubrique-trigger">
+                                <h3 class="rubrique-titre">Chez vous !</h3>
+                                <span class="rubrique-fleche">▼</span>
+                            </button>
+                            <div class="rubrique-contenu">
+                                <div class="rubrique-texte" id="chezvous-content">
+                                    Chargement du contenu...
+                                </div>
+                                <!-- Bouton Contact -->
+                                <div class="rubrique-actions">
+                                    <a href="contact.html" class="btn-contact">
+                                        Contactez-nous pour une livraison
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Rubrique 3 : Dans les commerces -->
-                <div class="rubrique" data-rubrique="commerces">
-                    <button class="rubrique-trigger">
-                        <h3 class="rubrique-titre">Dans les commerces :</h3>
-                        <span class="rubrique-fleche">▼</span>
-                    </button>
-                    <div class="rubrique-contenu">
-                        <div class="rubrique-texte" id="commerces-content">
-                            Chargement du contenu...
+                        
+                        <!-- Rubrique 2 : Foires et Événements -->
+                        <div class="rubrique" data-rubrique="foires">
+                            <button class="rubrique-trigger">
+                                <h3 class="rubrique-titre">Foires et Événements :</h3>
+                                <span class="rubrique-fleche">▼</span>
+                            </button>
+                            <div class="rubrique-contenu">
+                                <div class="rubrique-texte" id="foires-content">
+                                    Chargement du contenu...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Rubrique 3 : Dans les commerces -->
+                        <div class="rubrique" data-rubrique="commerces">
+                            <button class="rubrique-trigger">
+                                <h3 class="rubrique-titre">Dans les commerces :</h3>
+                                <span class="rubrique-fleche">▼</span>
+                            </button>
+                            <div class="rubrique-contenu">
+                                <div class="rubrique-texte" id="commerces-content">
+                                    Chargement du contenu...
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -222,8 +292,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </section>
 </main>
 
-  <footer class="footer">
+<footer class="footer">
     © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
-  </footer>
+</footer>
 </body>
 </html>
