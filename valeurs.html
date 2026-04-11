@@ -9,147 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
-<style>/* ============================================ VALEURS ============================================*/
-
-.valeurs-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 50px;
-    padding: 20px 0;
-    margin-top: -10px;
-}
-
-.valeur-card {
-    background-color: #fffbf1;
-    border-radius: 15px;
-    padding: 30px;
-    width: 90%;
-    max-width: 1200px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.valeur-card::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: linear-gradient(45deg, #a1a466, #d4b972, #a1a466);
-    z-index: -1;
-    animation: rotate 15s linear infinite;
-    opacity: 0.3;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.valeur-content {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.valeur-image {
-    width: 250px;
-    height: auto;
-    border-radius: 10px;
-    transition: all 0.4s ease;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-.valeur-text {
-    flex: 1;
-    font-size: 1.3em;
-    color:#522b0d;
-    line-height: 1.7;
-    animation: fadeInUp 0.8s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-}
-
-.valeur-text h3 {
-    color: #a1a466;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* Animation stoppée au clic */
-.valeur-card.stopped .valeur-image {
-    animation-play-state: paused !important;
-}
-
-.valeur-card.stopped::before {
-    animation-play-state: paused !important;
-}
-
-.valeur-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-}
-
-.valeur-card:hover .valeur-image {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-#sante-text,
-#ingredients-text,
-#consigne-text {
-    white-space: pre-wrap;
-    margin: 0;
-    font-family: 'Bree Serif', serif;
-}
-
-/* Effets spéciaux au chargement */
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Animations multiples pour les cartes */
-.valeur-card:nth-child(1) .valeur-text {
-    animation-delay: 0.2s;
-}
-
-.valeur-card:nth-child(2) .valeur-text {
-    animation-delay: 0.4s;
-}
-
-.valeur-card:nth-child(3) .valeur-text {
-    animation-delay: 0.6s;
-}
-
-/* Effet de clignotement pour les titres */
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.valeur-card:hover .valeur-title {
-    animation: blink 0.5s ease-in-out;
-}</style>
 </head>
 <body>
 <header>
@@ -166,82 +25,16 @@
   </nav>
 </header>
 <main>
-  <section class="valeurs-section">
     <div class="intro-text">
-            <h2 class="section-title">Nos valeurs</h2>
-        </div>
-        
-        <div class="valeur-card">
-            <div class="valeur-content">
-                <img src="images/haricot.png" alt="Respect de la santé" class="valeur-image">
-                <div class="valeur-text">
-                    <h3 class="valeur-title">Respecter votre santé</h3>
-                    <pre id="sante-text">chargement...</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="valeur-card">
-            <div class="valeur-content">
-                <img src="images/qualite.png" alt="Ingrédients de qualité" class="valeur-image">
-                <div class="valeur-text">
-                    <h3 class="valeur-title">Ingrédients de qualités</h3>
-                    <pre id="ingredients-text">chargement...</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="valeur-card">
-            <div class="valeur-content">
-                <img src="images/consigne.png" alt="Système de consigne" class="valeur-image">
-                <div class="valeur-text">
-                    <h3 class="valeur-title">Système de consigne</h3>
-                    <pre id="consigne-text">chargement...</pre>
-                </div>
-            </div>
-        </div>
-  </section>
+            <h2 class="section-title">Nos Valeurs</h2>
+    </div>
+    <div class="images-container">
+        <img src="images/reglesvaleurs1.png" alt="Règles et valeurs 1">
+        <img src="images/reglesvaleurs2.png" alt="Règles et valeurs 2">
+    </div>
 </main>
   <footer class="footer">
     © 2026 · Bocaux d'Aqui · conserves artisanales <i class="fas fa-leaf"></i>
   </footer>
-
-<script>
-    // Fonction pour charger les fichiers texte
-    function loadTextFile(filename, elementId) {
-        fetch(filename)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById(elementId).textContent = data;
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement de ' + filename, error);
-                document.getElementById(elementId).textContent = "Erreur de chargement";
-            });
-    }
-
-    // Charger les fichiers texte
-    loadTextFile('sante.txt', 'sante-text');
-    loadTextFile('ingredients.txt', 'ingredients-text');
-    loadTextFile('consigne.txt', 'consigne-text');
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const valeurCards = document.querySelectorAll('.valeur-card');
-    
-    valeurCards.forEach(card => {
-        card.addEventListener('click', function() {
-            // Vérifie si l'animation est déjà stoppée
-            if (this.classList.contains('stopped')) {
-                // Relance les animations
-                this.classList.remove('stopped');
-            } else {
-                // Stoppe les animations
-                this.classList.add('stopped');
-            }
-        });
-    });
-});
-</script>
 </body>
 </html>
