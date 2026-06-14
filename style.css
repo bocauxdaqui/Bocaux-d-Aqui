@@ -429,11 +429,13 @@ main {
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
-    .section-title {
-        text-align: center;
-        font-family: 'Bree Serif', serif;
-        color: #522b0d;
-        margin-bottom: 20px;
+    .section-title2 {
+    text-align: center;
+    color: #522b0d;
+    font-size: 4.5em;
+    position: relative;
+    padding-top: 45px;
+    font-family: "ClickerScript Regular";
     }
 /* ============================================SECTION "OÙ NOUS TROUVER"============================================ */
 
@@ -1119,6 +1121,7 @@ footer {
       border-radius: 60px;
       color: #522b0d;
     }
+    
     /* responsive */
     @media (max-width: 700px) {
       .shop-controls { border-radius: 30px; padding: 1.2rem; }
@@ -1244,6 +1247,10 @@ footer {
         font-size: 2.2em;
         margin-bottom: 40px;
     }
+        .section-title2 {
+        font-size: 2.2em;
+        margin-bottom: 40px;
+    }
     
     .rubrique-trigger {
         padding: 20px 15px;
@@ -1345,6 +1352,10 @@ footer {
     }
     
     .section-title {
+        font-size: 1.8em;
+    }
+    
+    .section-title2 {
         font-size: 1.8em;
     }
     
